@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .slider-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        .slide {
+            flex: 0 0 100%;
+            width: 100%;
+        }
+
+        .slide img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        .dots-container {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: white;
+        }
+    </style>
+</head>
+<body>
+  <div class="slider-container">
+    <div class="slider">
+      <div class="slide">
+        <img src="img/ongrid.png" alt="Image 1">
+      </div>
+      <div class="slide">
+        <img src="img/wind.png" alt="Image 2">
+      </div>
+      <div class="slide">
+        <img src="img/grids.png" alt="Image 3">
+      </div>
+      <div class="slide">
+        <img src="img/home.png" alt="Image 4">
+      </div>
+    </div>
+    
+    <button class="slider-btn prev">❮</button>
+    <button class="slider-btn next">❯</button>
+    
+    <div class="dots-container"></div>
+  </div>
+
+  <script>
+    const slider = document.querySelector('.slider');
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.querySelector('.prev');
+    const nextBtn = document.querySelector('.next');
+    const dotsContainer = document.querySelector('.dots-container');
+
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+    let slideInterval;
+    let isHovered = false;
+
+    // Create dots
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (i === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    // Update dots
+    function updateDots() {
+      document.querySelectorAll('.dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+    }
+
+    // Go to specific slide
+    function goToSlide(n) {
+      currentSlide = n;
+      const offset = -currentSlide * 100;
+      slider.style.transform = `translateX(${offset}%)`;
+      updateDots();
+    }
+
+    // Next slide
+    function nextSlide() {
+      if (!isHovered) {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        goToSlide(currentSlide);
+      }
+    }
+
+    // Previous slide
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+      goToSlide(currentSlide);
+    }
+
+    // Start auto sliding
+    function startAutoSlide() {
+      slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    // Stop auto sliding
+    function stopAutoSlide() {
+      clearInterval(slideInterval);
+    }
+
+    // Event listeners
+    prevBtn.addEventListener('click', () => {
+      prevSlide();
+      stopAutoSlide();
+      startAutoSlide();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      nextSlide();
+      stopAutoSlide();
+      startAutoSlide();
+    });
+
+    // Add hover events to pause/resume slideshow
+    slider.addEventListener('mouseenter', () => {
+      isHovered = true;
+    });
+
+    slider.addEventListener('mouseleave', () => {
+      isHovered = false;
+    });
+
+    // Start the slideshow
+    startAutoSlide();
+  </script>
+</body>
+</html>
